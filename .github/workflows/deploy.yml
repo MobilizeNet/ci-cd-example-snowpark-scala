@@ -51,9 +51,8 @@ jobs:
           export LANG=C.UTF-8
           ~/bin/snowsql -q "CREATE DATABASE IF NOT EXISTS \"$SNOWSQL_WORK_DATABASE\" CLONE $SNOWSQL_DATABASE" -o friendly=false
       - name: Install SBT for building Scala
-        env: 
-          SNOWSQL_DATABASE: $SNOWSQL_WORK_DATABASE
         run: |
+          export SNOWSQL_DATABASE="$SNOWSQL_WORK_DATABASE"
           echo "BUILDING $GITHUB_REF_NAME DATABASE $SNOWSQL_WORK_DATABASE"
           sbt clean compile assembly
           sbt test
