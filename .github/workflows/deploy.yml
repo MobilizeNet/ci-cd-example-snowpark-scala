@@ -52,9 +52,6 @@ jobs:
         run: |
           export SNOWSQL_DATABASE="$ENVIRONMENT-$GITHUB_REF_NAME"
           echo "BUILDING $GITHUB_REF_NAME"
-          curl -s "https://get.sdkman.io" | bash
-          source "$HOME/.sdkman/bin/sdkman-init.sh"
-          sdk install sbt
           sbt clean compile assembly
           sbt test
       - name: Cleanup DB Artifact
