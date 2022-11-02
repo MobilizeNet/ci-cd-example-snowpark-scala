@@ -47,11 +47,12 @@ jobs:
         run: |
           export LC_ALL=C.UTF-8
           export LANG=C.UTF-8
-          ~/bin/snowsql -q "CREATE DATABASE IF NOT EXISTS \"$ENVIRONMENT-$GITHUB_REF_NAME\" CLONE DEV" -o friendly=false
+          ~/bin/snowsql -q "CREATE DATABASE IF NOT EXISTS \"$SNOWSQL_DATABASE-$ENVIRONMENT-$GITHUB_REF_NAME\" CLONE $SNOWSQL_DATABASE" -o friendly=false
       - name: Install SBT for building Scala
+        env: 
+          SNOWSQL_DATABASE: $SNOWSQL_DATABASE-$ENVIRONMENT-$GITHUB_REF_NAME
         run: |
-          export SNOWSQL_DATABASE="$ENVIRONMENT-$GITHUB_REF_NAME"
-          echo "BUILDING $GITHUB_REF_NAME"
+          echo "BUILDING $GITHUB_REF_NAME DATABASE $SNOWSQL_DATABASE"
           sbt clean compile assembly
           sbt test
       - name: Cleanup DB Artifact
