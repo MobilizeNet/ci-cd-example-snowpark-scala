@@ -50,6 +50,7 @@ jobs:
           ~/bin/snowsql -q "CREATE DATABASE IF NOT EXISTS \"$ENVIRONMENT-$GITHUB_REF_NAME\" CLONE DEV" -o friendly=false
       - name: Install SBT for building Scala
         run: |
+          export SNOWSQL_DATABASE="$ENVIRONMENT-$GITHUB_REF_NAME"
           echo "BUILDING $GITHUB_REF_NAME"
           curl -s "https://get.sdkman.io" | bash
           source "$HOME/.sdkman/bin/sdkman-init.sh"
