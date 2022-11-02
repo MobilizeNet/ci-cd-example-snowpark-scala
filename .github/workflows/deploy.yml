@@ -1,0 +1,62 @@
+# Very basic GitHub Action workflow, goes in ~/.github/workflows/deploy.yaml
+
+name: CI
+
+# Controls when the workflow will run
+on:
+  # Triggers the workflow on any branch or tag commit
+  push:
+    branches:
+      - "*"
+    tags:
+      - "v*"
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+jobs:
+  # This workflow contains a single job called "deploy"
+  deploy:
+    runs-on: ubuntu-latest
+
+    env:
+      SNOWSQL_PWD: ${{ secrets.SNOWFLAKE_PASSWORD }}
+      SNOWSQL_ACCOUNT: ${{ secrets.SNOWFLAKE_ACCOUNT }}
+      SNOWSQL_USER: ${{ secrets.SNOWFLAKE_USERNAME }}
+      SNOWSQL_DATABASE: ${{ secrets.SNOWFLAKE_DATABASE }}
+      SNOWSQL_SCHEMA: ${{ secrets.SNOWFLAKE_SCHEMA }}
+      SNOWSQL_ROLE: ${{ secrets.SNOWFLAKE_ROLE }}
+      SNOWSQL_WAREHOUSE: ${{ secrets.SNOWFLAKE_WAREHOUSE }}
+      LC_ALL: C.UTF-8
+      LANG: C.UTF-8
+      ENVIRONMENT: DEV
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v3
+      - uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin' # See 'Supported distributions' for available options
+          java-version: '11'
+      - name: Install SnowSQL
+        run: |
+          curl -O https://sfc-repo.snowflakecomputing.com/snowsql/bootstrap/1.2/linux_x86_64/snowsql-1.2.9-linux_x86_64.bash
+          SNOWSQL_DEST=~/bin SNOWSQL_LOGIN_SHELL=~/.profile bash snowsql-1.2.9-linux_x86_64.bash
+      - name: Setup Test Database
+        run: |
+          export LC_ALL=C.UTF-8
+          export LANG=C.UTF-8
+          ~/bin/snowsql -q "CREATE DATABASE IF NOT EXISTS \"$ENVIRONMENT-$GITHUB_REF_NAME\" CLONE DEV" -o friendly=false
+      - name: Install SBT for building Scala
+        run: |
+          echo "BUILDING $GITHUB_REF_NAME"
+          curl -s "https://get.sdkman.io" | bash
+          source "$HOME/.sdkman/bin/sdkman-init.sh"
+          sdk install sbt
+          sbt clean compile assembly
+          sbt test
+      - name: Cleanup DB Artifact
+        if: always()
+        run: |
+          ~/bin/snowsql -q "DROP DATABASE IF EXISTS \"$ENVIRONMENT-$GITHUB_REF_NAME\" "" -o friendly=false
