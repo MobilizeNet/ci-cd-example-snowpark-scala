@@ -6,13 +6,14 @@ import com.snowflake.snowpark.types._
 
 object LoadData {
     def main(args: Array[String]) : Unit = {
+        val database = '"' + sys.env("SNOWSQL_DATABASE") + '"'
         val configMap = Map (
             "URL" -> s"https://${sys.env("SNOWSQL_ACCOUNT")}.snowflakecomputing.com:443",
             "USER" -> sys.env("SNOWSQL_USER"),
             "PASSWORD" -> sys.env("SNOWSQL_PWD"),
             "ROLE" -> sys.env("SNOWSQL_ROLE"),
             "WAREHOUSE" -> sys.env("SNOWSQL_WAREHOUSE"),
-            "DB" -> sys.env("SNOWSQL_DATABASE"),
+            "DB" -> database,
             "SCHEMA" -> sys.env.getOrElse("SNOWSQL_SCHEMA", "")
         )
         val session = Session.builder.configs(configMap).create
