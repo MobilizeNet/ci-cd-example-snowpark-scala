@@ -28,7 +28,7 @@ jobs:
       SNOWSQL_SCHEMA: ${{ secrets.SNOWFLAKE_SCHEMA }}
       SNOWSQL_ROLE: ${{ secrets.SNOWFLAKE_ROLE }}
       SNOWSQL_WAREHOUSE: ${{ secrets.SNOWFLAKE_WAREHOUSE }}
-      SNOWSQL_WORK_DATABASE: build-${{ secrets.SNOWFLAKE_DATABASE }}-DEV-${{ github.ref_name }}
+      SNOWSQL_WORK_DATABASE: build_${{ secrets.SNOWFLAKE_DATABASE }}_DEV_${{ github.ref_name }}
       LC_ALL: C.UTF-8
       LANG: C.UTF-8
 
@@ -47,17 +47,17 @@ jobs:
           SNOWSQL_DEST=~/bin SNOWSQL_LOGIN_SHELL=~/.profile bash snowsql-1.2.9-linux_x86_64.bash
       - name: Setup Test Database
         run: |
-          export LC_ALL=C.UTF-8
-          export LANG=C.UTF-8
-          ~/bin/snowsql -q "CREATE DATABASE IF NOT EXISTS \"$SNOWSQL_WORK_DATABASE\" CLONE $SNOWSQL_DATABASE" -o friendly=false
+          ~/bin/snowsql -o friendly=false << QUERY
+          CREATE DATABASE IF NOT EXISTS $SNOWSQL_WORK_DATABASE CLONE $SNOWSQL_DATABASE;
+          QUERY
       - name: Build Code
         run: |
           export SNOWSQL_DATABASE="$SNOWSQL_WORK_DATABASE"
-          echo "BUILDING $GITHUB_REF_NAME DATABASE $SNOWSQL_WORK_DATABASE"
+          echo "BUILD for branch: $GITHUB_REF_NAME database: $SNOWSQL_WORK_DATABASE"
           sbt clean compile assembly
           source publish.sh
           sbt test
       - name: Cleanup DB Artifact
         if: always()
         run: |
-          ~/bin/snowsql -q "DROP DATABASE IF EXISTS \"$SNOWSQL_WORK_DATABASE\" " -o friendly=false
+          ~/bin/snowsql -q "DROP DATABASE IF EXISTS $SNOWSQL_WORK_DATABASE " -o friendly=false
