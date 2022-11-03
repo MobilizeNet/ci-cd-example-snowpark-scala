@@ -59,4 +59,4 @@ jobs:
       - name: Cleanup DB Artifact
         if: always()
         run: |
-          ~/bin/snowsql -q "DROP DATABASE IF EXISTS \"$SNOWSQL_WORK_DATABASE\" "" -o friendly=false
+          ~/bin/snowsql -q "DROP DATABASE IF EXISTS \"$SNOWSQL_WORK_DATABASE\" " -o friendly=false
