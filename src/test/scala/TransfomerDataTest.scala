@@ -30,7 +30,6 @@ class TransfomerDataTest extends FunSuite with BeforeAndAfter {
     }
 
     before {
-        val database = '"' + sys.env("SNOWSQL_DATABASE") + '"'
         logger = LoggerFactory.getLogger(getClass.getSimpleName)
         logger.info(s"Connecting to account: ${sys.env("SNOWSQL_ACCOUNT")} role: ${sys.env("SNOWSQL_ROLE")} db: ${sys.env("SNOWSQL_DATABASE")}")
         val configs = Map (
@@ -39,7 +38,7 @@ class TransfomerDataTest extends FunSuite with BeforeAndAfter {
             "PASSWORD" -> sys.env("SNOWSQL_PWD"),
             "ROLE" -> sys.env("SNOWSQL_ROLE"),
             "WAREHOUSE" -> sys.env("SNOWSQL_WAREHOUSE"),
-            "DB" -> database,
+            "DB" -> sys.env("SNOWSQL_DATABASE"),
             "SCHEMA" -> sys.env.getOrElse("SNOWSQL_SCHEMA", "")
         )
         session = Session.builder.configs(configs).create
