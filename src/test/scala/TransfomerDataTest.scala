@@ -32,7 +32,7 @@ class TransfomerDataTest extends FunSuite with BeforeAndAfter {
             "PASSWORD" -> sys.env("SNOWSQL_PWD"),
             "ROLE" -> sys.env("SNOWSQL_ROLE"),
             "WAREHOUSE" -> sys.env("SNOWSQL_WAREHOUSE"),
-            "DB" -> "\"" + ${sys.env("SNOWSQL_DATABASE")} + "\"",
+            "DB" -> "\"" + sys.env("SNOWSQL_DATABASE") + "\"",
             "SCHEMA" -> sys.env.getOrElse("SNOWSQL_SCHEMA", "")
         )
         session = Session.builder.configs(configs).create
