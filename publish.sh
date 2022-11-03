@@ -1,5 +1,6 @@
 ~/bin/snowsql -o quiet=true <<QUERY
- 
+use database $SNOWSQL_WORK_DATABASE;
+
 create stage if not exists workstage;
 put file://./target/scala-2.12/ci-cd-sample-assembly-1.0-$GITHUB_REF_NAME.jar @workstage overwrite=true  auto_compress=FALSE;
 
