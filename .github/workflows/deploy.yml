@@ -47,9 +47,7 @@ jobs:
           SNOWSQL_DEST=~/bin SNOWSQL_LOGIN_SHELL=~/.profile bash snowsql-1.2.9-linux_x86_64.bash
       - name: Setup Test Database
         run: |
-          ~/bin/snowsql -o friendly=false << QUERY
-          CREATE DATABASE IF NOT EXISTS $SNOWSQL_WORK_DATABASE CLONE $SNOWSQL_DATABASE;
-          QUERY
+          ~/bin/snowsql -o friendly=false -q "CREATE DATABASE IF NOT EXISTS $SNOWSQL_WORK_DATABASE CLONE $SNOWSQL_DATABASE"
       - name: Build Code
         run: |
           export SNOWSQL_DATABASE="$SNOWSQL_WORK_DATABASE"
@@ -60,4 +58,4 @@ jobs:
       - name: Cleanup DB Artifact
         if: always()
         run: |
-          ~/bin/snowsql -q "DROP DATABASE IF EXISTS $SNOWSQL_WORK_DATABASE " -o friendly=false
+          ~/bin/snowsql -o friendly=false -q "DROP DATABASE IF EXISTS $SNOWSQL_WORK_DATABASE" 
