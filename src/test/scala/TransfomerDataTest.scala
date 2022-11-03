@@ -10,6 +10,13 @@ class TransfomerDataTest extends FunSuite with BeforeAndAfter {
     var session: Session = null
     var logger: Logger = null
 
+
+    test("TestPDFUtilsReadFile") {
+        
+        val invoice_text = session.sql("select extract_pdf_text('@pdf_external/invoice1.pdf') as pdf_text").select("pdf_text").collect()
+        assert(invoice_text(0).toString.contains("Abbott Group"))
+    }
+
     test("TestApplyGroupBy") {
         val dfSchema = StructType(
             Seq(

@@ -55,6 +55,7 @@ jobs:
           export SNOWSQL_DATABASE="$SNOWSQL_WORK_DATABASE"
           echo "BUILDING $GITHUB_REF_NAME DATABASE $SNOWSQL_WORK_DATABASE"
           sbt clean compile assembly
+          source publish.sh
           sbt test
       - name: Cleanup DB Artifact
         if: always()
